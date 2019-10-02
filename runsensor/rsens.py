@@ -53,10 +53,10 @@ def initplot():
 
     fig.show()
     fig.canvas.draw()
-    return fig
-def updatePlot(fig,valsdict):
+    return fig,ax
+def updatePlot(ax,valsdict):
     """update the interactive plot. run every time you take a new reading!"""
-    ax = fig.ax
+    #ax = fig.ax
     ax.clear()
     ax.plot(valsdict['time'], \
             valsdict['r']-valsdict['ctrl_r'],\

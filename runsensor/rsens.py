@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 tcs34725 = TCS34725() #intialize the i2c comm
-ledpin = 4
+ledpin = 7
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW) #set the pin to output
 

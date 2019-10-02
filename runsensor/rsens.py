@@ -59,15 +59,15 @@ def updatePlot(ax,valsdict):
     #ax = fig.ax
     ax.clear()
     ax.plot(valsdict['time'], \
-            valsdict['r']-valsdict['ctrl_r'],\
+            [a[0]-a[1] for a in zip(valsdict['r'],valsdict['ctrl_r'])],\
             color='red')
     ax.plot(valsdict['time'], \
-            valsdict['g']-valsdict['ctrl_g'],\
+            [a[0]-a[1] for a in zip(valsdict['g'],valsdict['ctrl_g'])],\
             color='green')
     ax.plot(valsdict['time'], \
-            valsdict['b']-valsdict['ctrl_b'],\
+            [a[0]-a[1] for a in zip(valsdict['b'],valsdict['ctrl_b'])],\
             color='blue')
     ax.plot(valsdict['time'], \
-            valsdict['c']-valsdict['ctrl_c'],\
+            [a[0]-a[1] for a in zip(valsdict['c'],valsdict['ctrl_c'])],\
             color='black')
     fig.canvas.draw()

@@ -54,7 +54,7 @@ def initplot():
     fig.show()
     fig.canvas.draw()
     return fig,ax
-def updatePlot(ax,valsdict):
+def updatePlot(fig,ax,valsdict):
     """update the interactive plot. run every time you take a new reading!"""
     #ax = fig.ax
     ax.clear()

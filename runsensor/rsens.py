@@ -35,7 +35,10 @@ def updateDict(indict,starttime,newdict,outfname = None):
         with open(outfname,"a") as outfleline:
                     outfleline.writelines(fstr)
     for key in indict:
-        indict[key] = indict[key] + [newdict[key]]
+        if(key=='time'):
+            continue
+        else:
+            indict[key] = indict[key] + [newdict[key]]
     indict['time']= indict['time']+[curtime]
 def initFile(outfname):
     """start the file which will save the output"""

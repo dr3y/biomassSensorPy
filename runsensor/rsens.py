@@ -5,18 +5,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-tcs34725 = TCS34725() #intialize the i2c comm
-ledpin = 7
-GPIO.setmode(GPIO.BOARD) #set the pin numbering
-GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW) #set the pin to output
 
-def takeReading():
+ledpin = 7
+
+def initSensor():
+    """initialize the sensor and setup the gpio"""
+    GPIO.setmode(GPIO.BOARD) #set the pin numbering
+    GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW) #set the pin to output
+    return TCS34725() #intialize the i2c comm
+def takeReading(sensor):
     GPIO.output(ledpin,GPIO.HIGH) #LED on
     time.sleep(1.4) #wait for the integration time of the sensor
-    lum = tcs34725.readluminance() #read the sensor
+    lum = sensor.readluminance() #read the sensor
     GPIO.output(ledpin,GPIO.LOW) #LED off
     time.sleep(1.4) #wait for integration time
-    lum_ctrl = tcs34725.readluminance() #read the sensor; background control
+    lum_ctrl = sensor.readluminance() #read the sensor; background control
     lum['ctrl_r'] = lum_ctrl['r']
     lum['ctrl_g'] = lum_ctrl['g']
     lum['ctrl_b'] = lum_ctrl['b']
@@ -31,7 +34,7 @@ def updateDict(indict,starttime,newdict,outfname = None):
                         newdict['r'],newdict['g'],\
                         newdict['b'],newdict['c'],\
                         newdict['ctrl_r'],newdict['ctrl_g'],\
-                        newdict['ctrl_b'],newdict['ctrl_c']]])
+                        newdict['ctrl_b'],newdict['ctrl_c']]])+"\n"
         with open(outfname,"a") as outfleline:
                     outfleline.writelines(fstr)
     for key in indict:
@@ -50,10 +53,24 @@ def initplot():
     fig = plt.figure()
     ax = fig.add_subplot(111)
     plt.ion()
-
     fig.show()
     fig.canvas.draw()
     return fig,ax
+def readFile(fname):
+    """reads a file and converts it into a dictionary, sort of like a dataframe"""
+    vdict = []
+    with open(outfname,"r") as outfle:
+        columns = []
+        for fline in outfle:
+            sfline = fline.split(",")
+            if(vdict==[]):
+                columns = sfline
+                for value in sfline:
+                    vdict[value]=[]
+            else:
+                for value,datum in zip(sfline,columns):
+                    vdict[value]=[datum]
+    return vdict
 def updatePlot(fig,ax,valsdict):
     """update the interactive plot. run every time you take a new reading!"""
     #ax = fig.ax

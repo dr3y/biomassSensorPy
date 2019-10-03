@@ -8,11 +8,14 @@ import matplotlib.pyplot as plt
 
 ledpin = 7
 
-def initSensor():
+def initSensor(address = None):
     """initialize the sensor and setup the gpio"""
     GPIO.setmode(GPIO.BOARD) #set the pin numbering
     GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW) #set the pin to output
-    return TCS34725() #intialize the i2c comm
+    if(address == None):
+        return TCS34725() #intialize the i2c comm
+    else:
+        return TCS34725(address)
 def takeReading(sensor):
     GPIO.output(ledpin,GPIO.HIGH) #LED on
     time.sleep(1.4) #wait for the integration time of the sensor
@@ -46,7 +49,7 @@ def updateDict(indict,starttime,newdict,outfname = None):
 def initFile(outfname):
     """start the file which will save the output"""
     outfle = open(outfname,"w")
-    outfle.write("time,R,G,B,C,ctrlR,ctrlG,ctrlB,ctrlC\n")
+    outfle.write("time,r,g,b,c,ctrl_r,ctrl_g,ctrl_b,ctrl_c\n")
     outfle.close()
 def initplot():
     """initialize the interactive plot"""
@@ -58,18 +61,18 @@ def initplot():
     return fig,ax
 def readFile(fname):
     """reads a file and converts it into a dictionary, sort of like a dataframe"""
-    vdict = []
-    with open(outfname,"r") as outfle:
+    vdict = {}
+    with open(fname,"r") as outfle:
         columns = []
         for fline in outfle:
-            sfline = fline.split(",")
-            if(vdict==[]):
+            sfline = [a.strip() for a in fline.split(",")]
+            if(vdict=={}):
                 columns = sfline
                 for value in sfline:
                     vdict[value]=[]
             else:
-                for value,datum in zip(sfline,columns):
-                    vdict[value]=[datum]
+                for datum,value in zip(sfline,columns):
+                    vdict[value]=vdict[value]+[float(datum)]
     return vdict
 def updatePlot(fig,ax,valsdict):
     """update the interactive plot. run every time you take a new reading!"""

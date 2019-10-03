@@ -54,31 +54,32 @@ TCS34725_REG_CONTROL_AGAIN_16 = 0x02 # 16x Gain
 TCS34725_REG_CONTROL_AGAIN_60 = 0x03 # 60x Gain
 
 class TCS34725():
-    def __init__(self):
+    def __init__(self,address=TCS34725_DEFAULT_ADDRESS):
+        self.i2caddress = address
         self.enable_selection()
         self.time_selection()
         self.gain_selection()
 
-    def enable_selection(self):
+    def enable_selection(self,address=TCS34725_DEFAULT_ADDRESS):
         """Select the ENABLE register configuration from the given provided values"""
         ENABLE_CONFIGURATION = (TCS34725_REG_ENABLE_AEN | TCS34725_REG_ENABLE_PON)
-        bus.write_byte_data(TCS34725_DEFAULT_ADDRESS, TCS34725_REG_ENABLE | TCS34725_COMMAND_BIT, ENABLE_CONFIGURATION)
+        bus.write_byte_data(self.i2caddress, TCS34725_REG_ENABLE | TCS34725_COMMAND_BIT, ENABLE_CONFIGURATION)
 
     def time_selection(self):
         """Select the ATIME register configuration from the given provided values"""
-        bus.write_byte_data(TCS34725_DEFAULT_ADDRESS, TCS34725_REG_ATIME | TCS34725_COMMAND_BIT, TCS34725_REG_ATIME_700)
+        bus.write_byte_data(self.i2caddress, TCS34725_REG_ATIME | TCS34725_COMMAND_BIT, TCS34725_REG_ATIME_700)
 
         """Select the WTIME register configuration from the given provided values"""
-        bus.write_byte_data(TCS34725_DEFAULT_ADDRESS, TCS34725_REG_WTIME | TCS34725_COMMAND_BIT, TCS34725_REG_WTIME_2_4)
+        bus.write_byte_data(self.i2caddress, TCS34725_REG_WTIME | TCS34725_COMMAND_BIT, TCS34725_REG_WTIME_2_4)
 
     def gain_selection(self):
         """Select the gain register configuration from the given provided values"""
-        bus.write_byte_data(TCS34725_DEFAULT_ADDRESS, TCS34725_REG_CONTROL | TCS34725_COMMAND_BIT, TCS34725_REG_CONTROL_AGAIN_1)
+        bus.write_byte_data(self.i2caddress, TCS34725_REG_CONTROL | TCS34725_COMMAND_BIT, TCS34725_REG_CONTROL_AGAIN_1)
 
     def readluminance(self):
         """Read data back from TCS34725_REG_CDATAL(0x94), 8 bytes, with TCS34725_COMMAND_BIT, (0x80)
         cData LSB, cData MSB, Red LSB, Red MSB, Green LSB, Green MSB, Blue LSB, Blue MSB"""
-        data = bus.read_i2c_block_data(TCS34725_DEFAULT_ADDRESS, TCS34725_REG_CDATAL | TCS34725_COMMAND_BIT, 8)
+        data = bus.read_i2c_block_data(self.i2caddress, TCS34725_REG_CDATAL | TCS34725_COMMAND_BIT, 8)
 
         # Convert the data
         cData = data[1] * 256 + data[0]

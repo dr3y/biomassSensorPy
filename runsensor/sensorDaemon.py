@@ -19,7 +19,7 @@ while True:
             #each line contains: filename,i2c-address,start-time
             lsplit = lne.split(",")
             current_filename = lsplit[0]
-            current_i2caddress = int(lsplit[1])
+            current_i2caddress = int(lsplit[1],16)
             current_starttime = float(lsplit[2])
             try:
                 #check if the file is there!

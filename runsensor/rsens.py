@@ -42,10 +42,10 @@ def updateDict(indict,starttime,newdict,outfname = None):
                     outfleline.writelines(fstr)
     for key in indict:
         if(key=='time'):
-            continue
+            indict['time']= indict['time']+[curtime]
         else:
             indict[key] = indict[key] + [newdict[key]]
-    indict['time']= indict['time']+[curtime]
+
 def initFile(outfname):
     """start the file which will save the output"""
     outfle = open(outfname,"w")

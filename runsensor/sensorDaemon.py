@@ -9,7 +9,7 @@ from TCS34725 import TCS34725
 
 ledpin = 7 #all the LEDs are the same pin
 delay = 25 #read every 25 seconds
-statuspath = os.path.join('.','data','statusfile.txt')
+statuspath = os.path.join('..','data','statusfile.txt')
 
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)

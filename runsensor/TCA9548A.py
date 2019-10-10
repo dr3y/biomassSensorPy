@@ -16,10 +16,10 @@ class TCA9548A():
     def scan(self):
         """scans through all multiplexer channels and all i2c addresses.
         If the data send doesn't fail, it means there's a device there."""
+        devices = []
         for mult_ind in range(8):
             #this part scans across all possible multiplexers
             self.tcaselect(mult_ind)
-            devices = []
             for i in range(127):
                 if(i==self.i2caddress):
                     continue

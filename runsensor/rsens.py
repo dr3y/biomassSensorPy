@@ -28,6 +28,9 @@ def takeReading(sensor):
     lum['ctrl_b'] = lum_ctrl['b']
     lum['ctrl_c'] = lum_ctrl['c']
     return lum
+def takeBGReading(sensor):
+    lum = sensor.readluminance() #read the sensor
+    return lum
 def updateDict(indict,starttime,newdict,outfname = None):
     """adds the current reading to the existing dictionary; also
     to the file if desired"""

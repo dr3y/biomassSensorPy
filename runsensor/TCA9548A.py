@@ -18,7 +18,7 @@ class TCA9548A():
         If the data send doesn't fail, it means there's a device there."""
         for mult_ind in range(8):
             #this part scans across all possible multiplexers
-            self.tcsselect(mult_ind)
+            self.tcaselect(mult_ind)
             devices = []
             for i in range(127):
                 if(i==self.i2caddress):

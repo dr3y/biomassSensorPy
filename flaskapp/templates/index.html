@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+  <meta charset="utf-8">
+  <title>Layouts &raquo; Thirds Grid</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+
+  <!-- Demo Dependencies -->
+  <script src="../static/plotly-latest.min.js"></script>
+  <script src="../static/jquery.min.js"></script>
+  <script src="../static/holder.js" type="text/javascript"></script>
+  <script>
+    Holder.addTheme("white", {
+      bg: "#fff",
+      fg: "#a7a7a7",
+      size: 10
+    });
+  </script>
+
+  <!-- keen-analysis@3 -->
+  <script src="../static/keen-analysis.min.js" type="text/javascript"></script>
+
+  <!-- keen-dataviz@3 -->
+  <link href="../static/keen-dataviz.min.css" rel="stylesheet" />
+  <script src="../static/keen-dataviz.min.js" type="text/javascript"></script>
+
+  <!-- Dashboard -->
+  <link rel="stylesheet" type="text/css"
+    href="../static/normalize.min.css" />
+  <link rel="stylesheet" type="text/css" href="../static/keen-dashboards.css" />
+
+  <script>
+      ws = new WebSocket("ws://localhost:9997")
+      //var request_data_interval
+      //ws.onopen = function()
+      //{
+          // Web Socket is connected, send data using send()
+      //    ws.send("Message to send");
+      //    request_data_interval = window.setInterval(requestData, 50);
+      //};
+
+      ws.onmessage = function (evt)
+      {
+          var received_msg = evt.data;
+          data = JSON.parse(evt.data);
+          var my_plot = {
+              x: data.x,
+              y: data.y,
+              type: 'scatter',
+
+          };
+          var layout={
+                    'title':'first graph',
+                    'margin':{'l':10,'r':10},
+                };
+          var plotstuff = {'data':my_plot,'layout':layout};
+          Plotly.react(div='graph-0',[my_plot],layout=layout);
+
+          //animate(div='graph-0', {data:[my_plot],traces:[0],layout:{}},
+        //{transition: {duration:0},frame: {duration: 0, redraw:false},});
+      };
+  </script>
+</head>
+
+<body class="keen-dashboard">
+  <div class="container">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar-header">
+
+
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="76.39 132.243 15.35 22" width="20" height="20" fill="#777">
+            <defs>
+              <path id="a"
+                d="M88.31 136.63c.29-.28.43-.63.43-1.05 0-.41-.14-.76-.43-1.04-.08-.09-.78-.78-.86-.87-.29-.28-.64-.43-1.05-.43-.41 0-.76.15-1.05.43-.75.75-6.78 6.77-7.53 7.53-.29.28-.43.63-.43 1.04 0 .42.14.76.43 1.05.75.75 6.78 6.77 7.53 7.53.29.28.64.42 1.05.42.41 0 .76-.14 1.05-.42.08-.09.78-.78.86-.87.29-.29.43-.63.43-1.04 0-.41-.14-.76-.43-1.05-.37-.38-2.24-2.25-5.61-5.61 3.37-3.37 5.24-5.24 5.61-5.62z" />
+            </defs>
+            <use xlink:href="#a" />
+            <use xlink:href="#a" />
+          </svg>
+
+
+      </div>
+      <div class="navbar-collapse">
+        <ul class="navbar-nav nav main-nav">
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container grid grid-thirds">
+    {% for id in ids %}
+        <!-- <h3>{{id}}</h3> -->
+        <!-- <div id="{{id}}"></div> -->
+
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            {{id}}
+          </div>
+          <div class="chart-stage" >
+              <div id="{{id}}">
+              <!-- <div class="chart" id="{{id}}"> </div>
+              <!- <img data-src="holder.js/100px180?theme=white&&text={{id}}"> -->
+              </div>
+          </div>
+          <div class="chart-notes">
+            Notes about {{id}}
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+
+  <!-- Project Analytics -->
+
+</body>
+<footer>
+  <script type="text/javascript">
+      var graphs = {{graphJSON | safe}};
+      var ids = {{ids | safe}};
+      for(var i in graphs) {
+          Plotly.plot(ids[i], // the ID of the div, created above
+                      graphs[i].data,
+                      graphs[i].layout || {});
+      }
+  </script>
+</footer>
+</html>

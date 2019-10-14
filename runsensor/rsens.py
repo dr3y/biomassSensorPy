@@ -3,7 +3,8 @@ from TCS34725 import TCS34725
 import RPi.GPIO as GPIO
 import numpy as np
 import matplotlib.pyplot as plt
-
+import ipywidgets as widgets
+import bqplot as bq
 
 
 ledpin = 7
@@ -94,3 +95,53 @@ def updatePlot(fig,ax,valsdict):
             [a[0]-a[1] for a in zip(valsdict['c'],valsdict['ctrl_c'])],\
             color='black')
     fig.canvas.draw()
+
+class PlotPanel:
+    NODATA=0
+    PLOTNODATA=1
+    PLOTDATA=2
+    PLOTPAUSE=3
+    NOSENSOR=4
+    def __init__(self,):
+        self.datastate = 0
+        self.beginbut = widgets.Button(
+            description='Begin',
+            disabled=False,
+            button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+            tooltip='start/pause',
+        )
+
+        self.endbut = widgets.Button(
+            description='End',
+            disabled=False,
+            button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
+            tooltip='stop',
+        )
+        self.fig = bq.Figure(marks=[scat],\
+                layout=widgets.Layout(width='auto', height='auto'),\
+                fig_margin=dict(top=0, bottom=0, left=0, right=0))
+        self.lbox = widgets.VBox([self.fig,widgets.HBox([self.beginbut,self.endbut])])
+        self.enactState(self)
+    def enactState(self):
+        if(self.datastate==NODATA):
+            self.beginbut.enabled=True
+            self.beginbut.description="Begin"
+            self.beginbut.button_style='success'
+            self.endbut.enabled=False
+            self.fig.marks=[]
+        elif(self.datastate==PLOTNODATA or self.datastate==PLOTDATA):
+            self.beginbut.enabled=True
+            self.beginbut.description="Pause"
+            self.beginbut.button_style='warning'
+            self.endbut.enabled=True
+        elif(self.datastate==PLOTPAUSE):
+            self.beginbut.enabled=True
+            self.beginbut.description="Continue"
+            self.beginbut.button_style='success'
+            self.endbut.enabled=False
+        elif(self.datastate==NOSENSOR):
+            self.beginbut.enabled=False
+            self.beginbut.description="No"
+            self.beginbut.button_style='success'
+            self.endbut.enabled=False
+            self.fig.marks=[]

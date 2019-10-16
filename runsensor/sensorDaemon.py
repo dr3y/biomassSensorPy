@@ -20,6 +20,7 @@ while True:
         tomeasure = []
         lastsensor = None
         multiplexer = TCA9548A()
+        nomult = False
         for lne in statfle:
             #each line contains: filename,i2c-address,start-time
             lsplit = lne.split(",")
@@ -42,7 +43,9 @@ while True:
             except OSError:
                 #this happens if the multiplexer isn't plugged in
                 #just keep trying until it works
-                continue
+                #in this case we could still be good, since
+                #we can still have one sensor plugged in
+                nomult = True
             try:
                 sensor = TCS34725()
                 lastsensor = sensor
@@ -57,14 +60,16 @@ while True:
             time.sleep(1.4)
             for sensor in tomeasure:
                 #take light measurements for everything
-                multiplexer.tcaselect(sensor[1])
+                if(not nomult):
+                    multiplexer.tcaselect(sensor[1])
                 data = takeBGReading(lastsensor)
                 sensor[3] = data
             GPIO.output(ledpin,GPIO.LOW) #LED off
             time.sleep(1.4)
             for sensor in tomeasure:
                 #take dark measurements for everything
-                multiplexer.tcaselect(sensor[1])
+                if(not nomult):
+                    multiplexer.tcaselect(sensor[1])
                 lum_ctrl = takeBGReading(lastsensor)
                 sensor[3]['ctrl_r'] = lum_ctrl['r']
                 sensor[3]['ctrl_g'] = lum_ctrl['g']

@@ -78,7 +78,7 @@ def readFile(fname):
                 for datum,value in zip(sfline,columns):
                     vdict[value]=vdict[value]+[float(datum)]
     return vdict
-def updatePlot(fig,ax,valsdict):
+def updatePlot(fig,ax,valsdict,xlim=None,ylim=None):
     """update the interactive plot. run every time you take a new reading!"""
     #ax = fig.ax
     ax.clear()
@@ -94,6 +94,10 @@ def updatePlot(fig,ax,valsdict):
     ax.plot(valsdict['time'], \
             [a[0]-a[1] for a in zip(valsdict['c'],valsdict['ctrl_c'])],\
             color='black')
+    if(not (xlim == None)):
+        ax.set_xlim(xlim[0],xlim[1])
+    if(not (ylim == None)):
+        ax.set_ylim(ylim[0],ylim[1])
     fig.canvas.draw()
 
 class PlotPanel:

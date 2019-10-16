@@ -1,6 +1,7 @@
+import time
+
 import numpy as np
 import json
-import time
 import asyncio
 import websockets
 

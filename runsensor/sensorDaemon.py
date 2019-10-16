@@ -6,6 +6,11 @@ sys.path.append(os.path.join('.','runsensor'))
 from rsens import *
 from TCS34725 import TCS34725
 from TCA9548A import TCA9548A
+import numpy as np
+import json
+import asyncio
+import websockets
+
 
 
 ledpin = 7 #all the LEDs are the same pin
@@ -15,61 +20,72 @@ statuspath = os.path.join(datapath,'statusfile.txt')
 
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
-while True:
-    with open(statuspath,"r") as statfle:
-        tomeasure = []
-        lastsensor = None
-        multiplexer = TCA9548A()
-        for lne in statfle:
-            #each line contains: filename,i2c-address,start-time
-            lsplit = lne.split(",")
-            current_filename = lsplit[0]
-            current_i2caddress = int(lsplit[1])
-            current_starttime = float(lsplit[2])
+def lookatsensors(starttime):
+    curtime = time.time()
+    if()
+        with open(statuspath,"r") as statfle:
+            tomeasure = []
+            lastsensor = None
+            multiplexer = TCA9548A()
+            for lne in statfle:
+                #each line contains: filename,i2c-address,start-time
+                lsplit = lne.split(",")
+                current_filename = lsplit[0]
+                current_i2caddress = int(lsplit[1])
+                current_starttime = float(lsplit[2])
 
-            try:
-                #check if the file is there!
-                fle = open(os.path.join(datapath,current_filename),'r')
-                firstline = fle.readlines()[0].split(",")
-                if(firstline[0]=="time"):
-                    pass
-                fle.close()
-            except FileNotFoundError:
-                #if the file isn't there, then make it!
-                initFile(os.path.join(datapath,current_filename))
-            try:
-                multiplexer.tcaselect(current_i2caddress)
-            except OSError:
-                #this happens if the multiplexer isn't plugged in
-                #just keep trying until it works
-                continue
-            try:
-                sensor = TCS34725()
-                lastsensor = sensor
-            except OSError:
-                #this happens if the sensor isn't connected
-                continue
-            #if we made it all the way down here, everything connected!
-            tomeasure+=[[current_filename,current_i2caddress,current_starttime,None]]
-        if(len(tomeasure)>0):
-            #only do this stuff if there's something to measure
-            GPIO.output(ledpin,GPIO.HIGH) #LED on
-            time.sleep(1.4)
-            for sensor in tomeasure:
-                #take light measurements for everything
-                multiplexer.tcaselect(sensor[1])
-                data = takeBGReading(lastsensor)
-                sensor[3] = data
-            GPIO.output(ledpin,GPIO.LOW) #LED off
-            time.sleep(1.4)
-            for sensor in tomeasure:
-                #take dark measurements for everything
-                multiplexer.tcaselect(sensor[1])
-                lum_ctrl = takeBGReading(lastsensor)
-                sensor[3]['ctrl_r'] = lum_ctrl['r']
-                sensor[3]['ctrl_g'] = lum_ctrl['g']
-                sensor[3]['ctrl_b'] = lum_ctrl['b']
-                sensor[3]['ctrl_c'] = lum_ctrl['c']
-                #now, save everything
-                updateDict({},sensor[2],sensor[3],os.path.join(datapath,sensor[0]))
-    time.sleep(delay)
+                try:
+                    #check if the file is there!
+                    fle = open(os.path.join(datapath,current_filename),'r')
+                    firstline = fle.readlines()[0].split(",")
+                    if(firstline[0]=="time"):
+                        pass
+                    fle.close()
+                except FileNotFoundError:
+                    #if the file isn't there, then make it!
+                    initFile(os.path.join(datapath,current_filename))
+                try:
+                    multiplexer.tcaselect(current_i2caddress)
+                except OSError:
+                    #this happens if the multiplexer isn't plugged in
+                    #just keep trying until it works
+                    continue
+                try:
+                    sensor = TCS34725()
+                    lastsensor = sensor
+                except OSError:
+                    #this happens if the sensor isn't connected
+                    continue
+                #if we made it all the way down here, everything connected!
+                tomeasure+=[[current_filename,current_i2caddress,current_starttime,None]]
+            if(len(tomeasure)>0):
+                #only do this stuff if there's something to measure
+                GPIO.output(ledpin,GPIO.HIGH) #LED on
+                await asyncio.sleep(1.4)
+                for sensor in tomeasure:
+                    #take light measurements for everything
+                    multiplexer.tcaselect(sensor[1])
+                    data = takeBGReading(lastsensor)
+                    sensor[3] = data
+                GPIO.output(ledpin,GPIO.LOW) #LED off
+                await asyncio.sleep(1.4)
+                for sensor in tomeasure:
+                    #take dark measurements for everything
+                    multiplexer.tcaselect(sensor[1])
+                    lum_ctrl = takeBGReading(lastsensor)
+                    sensor[3]['ctrl_r'] = lum_ctrl['r']
+                    sensor[3]['ctrl_g'] = lum_ctrl['g']
+                    sensor[3]['ctrl_b'] = lum_ctrl['b']
+                    sensor[3]['ctrl_c'] = lum_ctrl['c']
+                    #now, save everything
+                    updateDict({},sensor[2],sensor[3],os.path.join(datapath,sensor[0]))
+    #time.sleep(delay)
+async def senddata(websocket,path)
+    while True:
+        await websocket.send(getdata())
+        await asyncio.sleep(5)
+
+asyncio.get_event_loop().run_until_complete(
+    websockets.serve(getdata,'127.0.0.1',9997))
+
+asyncio.get_event_loop().run_forever()

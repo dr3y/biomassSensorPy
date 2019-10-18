@@ -105,6 +105,11 @@
               </div>
           </div>
           <div class="chart-notes">
+            <!-- <div class='container'>-->
+                  <form>
+                      <a href=# id=button-{{id}}><button class='btn btn-default'>Start</button></a>
+                  </form>
+            <!-- </div> -->
             Notes about {{id}}
           </div>
         </div>
@@ -124,5 +129,16 @@
                       graphs[i].layout || {});
       }
   </script>
+  <script type=text/javascript>
+        {% for id in ids %}
+        $(function() {
+          $('a#button-{{id}}').bind('click', function() {
+            $.getJSON( "/background_process_test?butid={{id}}",
+            function(data) {});
+            return false;
+          });
+        });
+        {% endfor %}
+</script>
 </footer>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import json
 import plotly
 import pandas as pd
@@ -67,6 +67,13 @@ def index():
     return render_template('index.html',
                            ids=ids,
                            graphJSON=graphJSON)
+@app.route('/background_process_test')
+def background_process_test():
+    butid = request.args.get('butid')
+    print(butid)
+    #if request.method == 'POST':
+    #    print(request)
+    return( "nothing")
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)

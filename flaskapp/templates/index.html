@@ -45,21 +45,36 @@
       {
           var received_msg = evt.data;
           data = JSON.parse(evt.data);
-          var my_plot = {
-              x: data.x,
-              y: data.y,
-              type: 'scatter',
+          var channels = data.channels;
+          //alert(channels[1])
+          for(var i in channels){
+            var graphid = "graph-".concat(i);
+            var startbutid = "startbut-graph-".concat(i);
+            var endbutid = "endbut-graph-".concat(i);
+            var containerid = "containergraph-".concat(i);
+            if(data[i].visible=='0'){
+              document.getElementById(containerid).style.visibility = "hidden";
+            }else{
+              document.getElementById(containerid).style.visibility = "visible";
+              //alert(graphid);
+            };
+            if(data[i].buttons.start=='2'){
+              document.getElementById(startbutid).style.visibility = "hidden";
+            }
+            var my_plot = {
+                x: data[i].data.x,
+                y: data[i].data.y,
+                type: 'scatter',
+            };
+            var layout={
+                      'title':i,
+                      'margin':{'l':10,'r':10},
+                  };
+            var plotstuff = {'data':my_plot,'layout':layout};
+
+            Plotly.react(div=graphid,[my_plot],layout=layout);
 
           };
-          var layout={
-                    'title':'first graph',
-                    'margin':{'l':10,'r':10},
-                };
-          var plotstuff = {'data':my_plot,'layout':layout};
-          Plotly.react(div='graph-0',[my_plot],layout=layout);
-
-          //animate(div='graph-0', {data:[my_plot],traces:[0],layout:{}},
-        //{transition: {duration:0},frame: {duration: 0, redraw:false},});
       };
   </script>
 </head>
@@ -94,7 +109,7 @@
         <!-- <h3>{{id}}</h3> -->
         <!-- <div id="{{id}}"></div> -->
 
-        <div class="chart-wrapper">
+        <div class="chart-wrapper" id="container{{id}}">
           <div class="chart-title">
             {{id}}
           </div>
@@ -107,7 +122,8 @@
           <div class="chart-notes">
             <!-- <div class='container'>-->
                   <form>
-                      <a href=# id=button-{{id}}><button class='btn btn-default'>Start</button></a>
+                      <a href=# id=startbut-{{id}}><button class='btn btn-default'>Start</button></a>
+                      <a href=# id=endbut-{{id}}><button class='btn btn-default'>End</button></a>
                   </form>
             <!-- </div> -->
             Notes about {{id}}
@@ -132,8 +148,15 @@
   <script type=text/javascript>
         {% for id in ids %}
         $(function() {
-          $('a#button-{{id}}').bind('click', function() {
-            $.getJSON( "/background_process_test?butid={{id}}",
+          $('a#startbut-{{id}}').bind('click', function() {
+            $.getJSON( "/background_process_test?butid=startbut-{{id}}",
+            function(data) {});
+            return false;
+          });
+        });
+        $(function() {
+          $('a#endbut-{{id}}').bind('click', function() {
+            $.getJSON( "/background_process_test?butid=endbut-{{id}}",
             function(data) {});
             return false;
           });

@@ -36,7 +36,7 @@ def get_graph_data(fname):
             visible = True
             #possibile scenarios:
             if(connected):
-                print("channel "+str(channame)+" is connected")
+                #print("channel "+str(channame)+" is connected")
                 if(chanfile==''):
                     #in this case we are connected but havent started
                     #recording
@@ -52,15 +52,21 @@ def get_graph_data(fname):
                     y = []
                     if(chanfile[0]=="."):
                         chanfile = "."+chanfile
-                    with open(chanfile, 'r') as datafile:
-                        for dataline in datafile:
-                            if('time' in dataline):
-                                continue
-                            datasplit = dataline.split(",")
-                            newx = float(datasplit[0])
-                            newy = float(datasplit[4])-float(datasplit[8])
-                            x+=[newx]
-                            y+=[newy]
+                    try:
+                        #the file may not be created yet
+                        with open(chanfile, 'r') as datafile:
+                            for dataline in datafile:
+                                if('time' in dataline):
+                                    continue
+                                datasplit = dataline.split(",")
+                                newx = float(datasplit[0])
+                                newy = float(datasplit[4])-float(datasplit[8])
+                                x+=[newx]
+                                y+=[newy]
+                    except FileNotFoundError:
+                        #it's ok, just wait until it is created!
+                        print("data file does not exist!")
+                        #raise Warning("data file does not exist!")
                     x = tuple(x)
                     y = tuple(y)
             else:
@@ -95,7 +101,7 @@ def get_graph_data(fname):
 async def hello(websocket,path):
     while True:
         await websocket.send(get_graph_data(os.path.join("..","data","statusfile.txt")))
-        await asyncio.sleep(.2)
+        await asyncio.sleep(1)
     #async with websockets.connect(uri) as websocket:
     #    await websocket.send(get_graph_data())
         #await websocket.recv()

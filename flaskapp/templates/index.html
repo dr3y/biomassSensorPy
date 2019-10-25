@@ -51,6 +51,8 @@
             var graphid = "graph-".concat(i);
             var startbutid = "startbut-graph-".concat(i);
             var endbutid = "endbut-graph-".concat(i);
+            var starttextid = "starttxt-graph-".concat(i);
+            var endtextid = "endtxt-graph-".concat(i);
             var containerid = "containergraph-".concat(i);
             if(data[i].visible=='0'){
               document.getElementById(containerid).style.visibility = "hidden";
@@ -60,13 +62,26 @@
             };
             if(data[i].buttons.start=='2'){
               document.getElementById(startbutid).style.visibility = "hidden";
+            }else if(data[i].buttons.start=='1'){
+              document.getElementById(starttextid).innerHTML="Pause";
+              //document.getElementById(startbutid).class = 'btn btn-default';
+            }else{
+              document.getElementById(starttextid).innerHTML="Start";
+              //document.getElementById(startbutid).class = 'btn btn-default';
+              document.getElementById(startbutid).style.visibility = "visible";
             }
+            if(data[i].buttons.end=='1'){
+              document.getElementById(endbutid).style.visibility = "hidden";
+            }else{
+              document.getElementById(endbutid).style.visibility = "visible";
+            };
             var my_plot = {
                 x: data[i].data.x,
                 y: data[i].data.y,
                 type: 'scatter',
             };
             var layout={
+                      autosize: true,
                       'title':i,
                       'margin':{'l':10,'r':10},
                   };
@@ -122,8 +137,10 @@
           <div class="chart-notes">
             <!-- <div class='container'>-->
                   <form>
-                      <a href=# id=startbut-{{id}}><button class='btn btn-default'>Start</button></a>
-                      <a href=# id=endbut-{{id}}><button class='btn btn-default'>End</button></a>
+                      <!-- <input href=# type="button" value="Start" class='btn btn-default' id=startbut-{{id}}></input> -->
+                      <a href=# id=startbut-{{id}}><button class='btn btn-default' id=starttxt-{{id}}>Start</button></a>
+                        <!-- button >Start</button></a> -->
+                      <a href=# id=endbut-{{id}}><button class='btn btn-default' id=endtxt-{{id}}>End</button></a>
                   </form>
             <!-- </div> -->
             Notes about {{id}}
@@ -143,7 +160,15 @@
           Plotly.plot(ids[i], // the ID of the div, created above
                       graphs[i].data,
                       graphs[i].layout || {});
-      }
+      };
+
+      new ResizeSensor(jQuery('graph-0'), function(){
+        for(var i in graphs) {
+            Plotly.plot(ids[i], // the ID of the div, created above
+                        graphs[i].data,
+                        graphs[i].layout || {});
+        };
+      });
   </script>
   <script type=text/javascript>
         {% for id in ids %}

@@ -16,20 +16,52 @@ statuspath = os.path.join(datapath,'statusfile.txt')
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
 while True:
-    with open(statuspath,"r") as statfle:
+    statuslist = {}
+    try:
+        with open(statuspath,"r") as statfle:
+            #go through the file to pull in the status
+            #of each sensor
+            for lne in statfle:
+                lsplit = lne.strip().split(",")
+                current_filename = lsplit[0]
+                current_i2caddress = int(lsplit[1])
+                if(lsplit[2]==""):
+                    current_starttime =0.0
+                else:
+                    current_starttime = float(lsplit[2])
+                current_connected = int(lsplit[3])
+                statuslist[current_i2caddress] = \
+                        (current_filename,current_starttime,current_connected)
+    except FileNotFoundError:
+        #if the statusfile doesn't exist, then make it
+        with open(statuspath,"w") as statfle:
+            statfle.write('\n'.join([","+a+",,0" for a in range(8)]))
+    outtxt=""
+    for current_i2caddress in range(8):
+        #this will iterate through 8 possible multiplexer positions.
+
         tomeasure = []
         lastsensor = None
         multiplexer = TCA9548A()
         nomult = False
-        for lne in statfle:
-            #each line contains: filename,i2c-address,start-time
-            lsplit = lne.split(",")
-            current_filename = lsplit[0]
-            current_i2caddress = int(lsplit[1])
-            current_starttime = float(lsplit[2])
-
+        outtxt = ""
+        try:
+            sensorstatus = statuslist[current_i2caddress]
+        except KeyError:
+            #if we can't find the current sensor in the list then assume we
+            #know nothing about it or someone mangled the file
+            sensorstatus = ('',0.0,0)
+        current_filename = sensorstatus[0]
+        #current_i2caddress = int(lsplit[1])
+        current_starttime = sensorstatus[1]
+        current_connected = sensorstatus[2]
+        if(current_filename==""):
+            #if there's no filename, that means don't record anything.
+            pass
+        else:
+            #otherwise, check to see if the file is there
             try:
-                #check if the file is there!
+                #check if the data file is there!
                 fle = open(os.path.join(datapath,current_filename),'r')
                 firstline = fle.readlines()[0].split(",")
                 if(firstline[0]=="time"):
@@ -38,22 +70,46 @@ while True:
             except FileNotFoundError:
                 #if the file isn't there, then make it!
                 initFile(os.path.join(datapath,current_filename))
-            try:
-                multiplexer.tcaselect(current_i2caddress)
-            except OSError:
-                #this happens if the multiplexer isn't plugged in
-                #just keep trying until it works
-                #in this case we could still be good, since
-                #we can still have one sensor plugged in
-                nomult = True
-            try:
-                sensor = TCS34725()
-                lastsensor = sensor
-            except OSError:
-                #this happens if the sensor isn't connected
-                continue
-            #if we made it all the way down here, everything connected!
-            tomeasure+=[[current_filename,current_i2caddress,current_starttime,None]]
+        try:
+            multiplexer.tcaselect(current_i2caddress)
+        except OSError:
+            #this part makes it so the program thinks
+            #there is only one data window if the multiplexer
+            #is not present. Otherwise, every data window
+            #would be showing the same data!
+            if(current_i2caddress==0):
+                current_connected = 1
+            else:
+                current_connected = 0
+            #this happens if the multiplexer isn't plugged in
+            #just keep trying until it works
+            #in this case we could still be good, since
+            #we can still have one sensor plugged in
+            nomult = True
+        try:
+            sensor = TCS34725()
+            lastsensor = sensor
+            if(not nomult):
+                #so, if we have a multiplexer, and we detected
+                #a sensor, then write that down! otherwise, we already
+                #wrote down that we have only one sensor, above
+                current_connected = 1
+        except OSError:
+            #this happens if the sensor isn't connected
+            if(not nomult):
+                #so, if we have a multiplexer, and we detected
+                #there is no sensor, then write that down!
+                current_connected = 0
+        outputline = ','.join([str(current_filename),\
+                            str(current_i2caddress),\
+                            str(current_starttime),\
+                            str(current_connected)])+"\n"
+        outtxt+= outputline
+        if(current_connected and not (current_filename == "")):
+            #if we're connected and we have a filename, then record!
+            tomeasure+=[[current_filename,\
+                current_i2caddress,\
+                current_starttime,None]]
         if(len(tomeasure)>0):
             #only do this stuff if there's something to measure
             GPIO.output(ledpin,GPIO.HIGH) #LED on
@@ -77,4 +133,6 @@ while True:
                 sensor[3]['ctrl_c'] = lum_ctrl['c']
                 #now, save everything
                 updateDict({},sensor[2],sensor[3],os.path.join(datapath,sensor[0]))
+    with open(statuspath,"w") as statfle:
+        statfle.write(outtxt)
     time.sleep(delay)

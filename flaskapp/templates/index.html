@@ -159,16 +159,9 @@
       for(var i in graphs) {
           Plotly.plot(ids[i], // the ID of the div, created above
                       graphs[i].data,
-                      graphs[i].layout || {});
+                      graphs[i].layout || {},
+                      {responsive: true});
       };
-
-      new ResizeSensor(jQuery('graph-0'), function(){
-        for(var i in graphs) {
-            Plotly.plot(ids[i], // the ID of the div, created above
-                        graphs[i].data,
-                        graphs[i].layout || {});
-        };
-      });
   </script>
   <script type=text/javascript>
         {% for id in ids %}

@@ -53,9 +53,11 @@ while True:
         nomult = False
         try:
             sensorstatus = statuslist[current_i2caddress]
-            if(debug) print("have status!")
+            if(debug):
+                print("us!")
         except KeyError:
-            if(debug) print("no status, set it to zero")
+            if(debug):
+                print("no status, set it to zero")
             #if we can't find the current sensor in the list then assume we
             #know nothing about it or someone mangled the file
             sensorstatus = ('',0.0,0)

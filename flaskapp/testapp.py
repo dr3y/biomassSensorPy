@@ -73,7 +73,7 @@ def index():
                 margin={'l':10,'r':10}
             )
         )
-     for a in range(9)]
+     for a in range(8)]
 
     # Add "ids" to each of the graphs to pass up to the client
     # for templating

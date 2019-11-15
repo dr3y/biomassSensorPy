@@ -19,6 +19,7 @@ while True:
     statuslist = {}
     try:
         with open(statuspath,"r") as statfle:
+            print("foundfile!")
             #go through the file to pull in the status
             #of each sensor
             for lne in statfle:
@@ -33,11 +34,13 @@ while True:
                 statuslist[current_i2caddress] = \
                         (current_filename,current_starttime,current_connected)
     except FileNotFoundError:
+        print("nofile!")
         #if the statusfile doesn't exist, then make it
         with open(statuspath,"w") as statfle:
             statfle.write('\n'.join([","+a+",,0" for a in range(8)]))
     outtxt=""
     for current_i2caddress in range(8):
+        print("currently on "+str(current_i2caddress))
         #this will iterate through 8 possible multiplexer positions.
 
         tomeasure = []
@@ -47,7 +50,9 @@ while True:
         outtxt = ""
         try:
             sensorstatus = statuslist[current_i2caddress]
+            print("have status!")
         except KeyError:
+            print("no status, set it to zero")
             #if we can't find the current sensor in the list then assume we
             #know nothing about it or someone mangled the file
             sensorstatus = ('',0.0,0)
@@ -56,6 +61,7 @@ while True:
         current_starttime = sensorstatus[1]
         current_connected = sensorstatus[2]
         if(current_filename==""):
+            print("don't record data")
             #if there's no filename, that means don't record anything.
             pass
         else:
@@ -72,7 +78,9 @@ while True:
                 initFile(os.path.join(datapath,current_filename))
         try:
             multiplexer.tcaselect(current_i2caddress)
+            print("found multiplexer")
         except OSError:
+            print("multiplexer not present")
             #this part makes it so the program thinks
             #there is only one data window if the multiplexer
             #is not present. Otherwise, every data window
@@ -89,12 +97,14 @@ while True:
         try:
             sensor = TCS34725()
             lastsensor = sensor
+            print("found sensor")
             if(not nomult):
                 #so, if we have a multiplexer, and we detected
                 #a sensor, then write that down! otherwise, we already
                 #wrote down that we have only one sensor, above
                 current_connected = 1
         except OSError:
+            print("didn't find sensor")
             #this happens if the sensor isn't connected
             if(not nomult):
                 #so, if we have a multiplexer, and we detected

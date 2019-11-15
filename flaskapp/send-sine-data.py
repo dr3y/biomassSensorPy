@@ -10,6 +10,7 @@ _GOODBYE_MESSAGE = u'Goodbye'
 x = np.arange(0,np.pi*10,0.1).tolist()
 y = np.sin(x).tolist()
 data_size = len(x)
+datapath = os.path.join('..','data')
 counter = 0
 graph_size = 100
 
@@ -50,11 +51,9 @@ def get_graph_data(fname):
                     endbut = 0 #end is enabled
                     x = []
                     y = []
-                    if(chanfile[0]=="."):
-                        chanfile = "."+chanfile
                     try:
                         #the file may not be created yet
-                        with open(chanfile, 'r') as datafile:
+                        with open(os.path.join(datapath,chanfile), 'r') as datafile:
                             for dataline in datafile:
                                 if('time' in dataline):
                                     continue

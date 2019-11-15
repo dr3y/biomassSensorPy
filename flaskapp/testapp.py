@@ -10,7 +10,8 @@ import os
 
 app = Flask(__name__)
 app.debug = False
-statusfile = os.path.join("..","data","statusfile.txt")
+datapath = os.path.join('..',"data")
+statusfile = os.path.join(datapath,"statusfile.txt")
 
 def modifyline(graphid,fname,makefile=True,newfilename="",curtime=""):
     """go through the status file and turn on or off recording"""
@@ -32,7 +33,7 @@ def modifyline(graphid,fname,makefile=True,newfilename="",curtime=""):
                     if(curtime==""):
                         curtime = time.time()
                     if(newfilename=="" and makefile):
-                        newfilename = os.path.join(".","data",curtimestr+"_odvals.csv")
+                        newfilename = os.path.join(curtimestr+"_odvals.csv")
                     newtimestamp = curtime
                     statout+=','.join([newfilename,\
                                 str(graphid),\

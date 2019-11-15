@@ -12,6 +12,7 @@ ledpin = 7 #all the LEDs are the same pin
 delay = 25 #read every 25 seconds
 datapath = os.path.join('..','data')
 statuspath = os.path.join(datapath,'statusfile.txt')
+debug = 0
 
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
@@ -40,19 +41,18 @@ while True:
             statfle.write('\n'.join([","+a+",,0" for a in range(8)]))
     outtxt=""
     for current_i2caddress in range(8):
-        print("currently on "+str(current_i2caddress))
+        if(debug) print("currently on "+str(current_i2caddress))
         #this will iterate through 8 possible multiplexer positions.
 
         tomeasure = []
         lastsensor = None
         multiplexer = TCA9548A()
         nomult = False
-        outtxt = ""
         try:
             sensorstatus = statuslist[current_i2caddress]
-            print("have status!")
+            if(debug) print("have status!")
         except KeyError:
-            print("no status, set it to zero")
+            if(debug) print("no status, set it to zero")
             #if we can't find the current sensor in the list then assume we
             #know nothing about it or someone mangled the file
             sensorstatus = ('',0.0,0)
@@ -61,7 +61,7 @@ while True:
         current_starttime = sensorstatus[1]
         current_connected = sensorstatus[2]
         if(current_filename==""):
-            print("don't record data")
+            if(debug) print("don't record data")
             #if there's no filename, that means don't record anything.
             pass
         else:
@@ -78,9 +78,9 @@ while True:
                 initFile(os.path.join(datapath,current_filename))
         try:
             multiplexer.tcaselect(current_i2caddress)
-            print("found multiplexer")
+            if(debug) print("found multiplexer")
         except OSError:
-            print("multiplexer not present")
+            if(debug) print("multiplexer not present")
             #this part makes it so the program thinks
             #there is only one data window if the multiplexer
             #is not present. Otherwise, every data window
@@ -97,14 +97,14 @@ while True:
         try:
             sensor = TCS34725()
             lastsensor = sensor
-            print("found sensor")
+            if(debug) print("found sensor")
             if(not nomult):
                 #so, if we have a multiplexer, and we detected
                 #a sensor, then write that down! otherwise, we already
                 #wrote down that we have only one sensor, above
                 current_connected = 1
         except OSError:
-            print("didn't find sensor")
+            if(debug) print("didn't find sensor")
             #this happens if the sensor isn't connected
             if(not nomult):
                 #so, if we have a multiplexer, and we detected

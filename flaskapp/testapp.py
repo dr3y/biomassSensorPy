@@ -9,7 +9,7 @@ import os
 
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 statusfile = os.path.join("..","data","statusfile.txt")
 
 def modifyline(graphid,fname,makefile=True,newfilename="",curtime=""):
@@ -99,4 +99,5 @@ def background_process_test():
     return( "nothing")
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='0.0.0.0', port=5000)
+    #app.run(host='127.0.0.1', port=5000)

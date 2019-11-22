@@ -55,9 +55,9 @@
             var endtextid = "endtxt-graph-".concat(i);
             var containerid = "containergraph-".concat(i);
             if(data[i].visible=='0'){
-              document.getElementById(containerid).style.visibility = "hidden";
+              document.getElementById(containerid).style.display = "none";
             }else{
-              document.getElementById(containerid).style.visibility = "visible";
+              document.getElementById(containerid).style.display = "block";
               //alert(graphid);
             };
             if(data[i].buttons.start=='2'){

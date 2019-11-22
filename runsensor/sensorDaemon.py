@@ -10,14 +10,22 @@ from TCA9548A import TCA9548A
 
 ledpin = 7 #all the LEDs are the same pin
 delay = 25 #read every 25 seconds
+prevtime = time.time()
 datapath = os.path.join('..','data')
 statuspath = os.path.join(datapath,'statusfile.txt')
+readnow = 0
 debug = 0
 
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
 while True:
     statuslist = {}
+    curtime = time.time()-prevtime
+    if(curtime > delay):
+        readnow = 1
+        prevtime = time.time()
+    else:
+        readnow = 0
     try:
         with open(statuspath,"r") as statfle:
             if(debug):
@@ -130,7 +138,7 @@ while True:
             tomeasure+=[[current_filename,\
                 current_i2caddress,\
                 current_starttime,None]]
-        if(len(tomeasure)>0):
+        if(len(tomeasure)>0 and readnow):
             #only do this stuff if there's something to measure
             GPIO.output(ledpin,GPIO.HIGH) #LED on
             time.sleep(1.4)
@@ -155,4 +163,4 @@ while True:
                 updateDict({},sensor[2],sensor[3],os.path.join(datapath,sensor[0]))
     with open(statuspath,"w") as statfle:
         statfle.write(outtxt)
-    time.sleep(delay)
+    time.sleep(1)

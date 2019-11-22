@@ -128,6 +128,9 @@ while True:
                 #so, if we have a multiplexer, and we detected
                 #there is no sensor, then write that down!
                 current_connected = 0
+                current_filename = ""
+                current_starttime = ""
+
         outputline = ','.join([str(current_filename),\
                             str(current_i2caddress),\
                             str(current_starttime),\

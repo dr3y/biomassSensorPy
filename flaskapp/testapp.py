@@ -7,7 +7,6 @@ import numpy as np
 import plotly.graph_objs as go
 import os
 
-
 app = Flask(__name__)
 app.debug = False
 datapath = os.path.join('..',"data")
@@ -33,7 +32,7 @@ def modifyline(graphid,fname,makefile=True,newfilename="",curtime=""):
                     if(curtime==""):
                         curtime = time.time()
                     if(newfilename=="" and makefile):
-                        newfilename = os.path.join(curtimestr+"_odvals.csv")
+                        newfilename = os.path.join(curtimestr+"_"+str(graphid)+"_odvals.csv")
                     newtimestamp = curtime
                     statout+=','.join([newfilename,\
                                 str(graphid),\

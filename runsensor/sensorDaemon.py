@@ -43,7 +43,7 @@ while True:
                 current_connected = int(lsplit[3])
                 statuslist[current_i2caddress] = \
                         (current_filename,current_starttime,current_connected)
-    except FileNotFoundError:
+    except IOError:
         if(debug):
             print("nofile!")
         #if the statusfile doesn't exist, then make it

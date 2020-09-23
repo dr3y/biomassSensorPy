@@ -16,6 +16,9 @@ statuspath = os.path.join(datapath,'statusfile.txt')
 readnow = 0
 debug = 0
 
+
+SENSOR_MAP = [0,3,7,4,2,6,5]
+
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
 while True:
@@ -48,7 +51,7 @@ while True:
             print("nofile!")
         #if the statusfile doesn't exist, then make it
         with open(statuspath,"w") as statfle:
-            statfle.write('\n'.join([","+a+",,0" for a in range(8)]))
+            statfle.write('\n'.join([","+str(a)+",,0" for a in range(8)]))
     outtxt=""
     for current_i2caddress in range(8):
         if(debug):
@@ -148,7 +151,7 @@ while True:
             for sensor in tomeasure:
                 #take light measurements for everything
                 if(not nomult):
-                    multiplexer.tcaselect(sensor[1])
+                    multiplexer.tcaselect(SENSOR_MAP[sensor[1]])
                 data = takeBGReading(lastsensor)
                 sensor[3] = data
             GPIO.output(ledpin,GPIO.LOW) #LED off
@@ -156,7 +159,7 @@ while True:
             for sensor in tomeasure:
                 #take dark measurements for everything
                 if(not nomult):
-                    multiplexer.tcaselect(sensor[1])
+                    multiplexer.tcaselect(SENSOR_MAP[sensor[1]])
                 lum_ctrl = takeBGReading(lastsensor)
                 sensor[3]['ctrl_r'] = lum_ctrl['r']
                 sensor[3]['ctrl_g'] = lum_ctrl['g']

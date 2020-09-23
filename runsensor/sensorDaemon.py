@@ -87,7 +87,7 @@ while True:
                 if(firstline[0]=="time"):
                     pass
                 fle.close()
-            except FileNotFoundError:
+            except OSError:
                 #if the file isn't there, then make it!
                 initFile(os.path.join(datapath,current_filename))
         try:

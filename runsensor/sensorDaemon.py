@@ -17,7 +17,7 @@ readnow = 0
 debug = 0
 
 
-SENSOR_MAP = [0,3,7,4,2,6,5]
+
 
 GPIO.setmode(GPIO.BOARD) #set the pin numbering
 GPIO.setup(ledpin,GPIO.OUT,initial=GPIO.LOW)
@@ -151,7 +151,7 @@ while True:
             for sensor in tomeasure:
                 #take light measurements for everything
                 if(not nomult):
-                    multiplexer.tcaselect(SENSOR_MAP[sensor[1]])
+                    multiplexer.tcaselect(sensor[1])
                 data = takeBGReading(lastsensor)
                 sensor[3] = data
             GPIO.output(ledpin,GPIO.LOW) #LED off
@@ -159,7 +159,7 @@ while True:
             for sensor in tomeasure:
                 #take dark measurements for everything
                 if(not nomult):
-                    multiplexer.tcaselect(SENSOR_MAP[sensor[1]])
+                    multiplexer.tcaselect(sensor[1])
                 lum_ctrl = takeBGReading(lastsensor)
                 sensor[3]['ctrl_r'] = lum_ctrl['r']
                 sensor[3]['ctrl_g'] = lum_ctrl['g']

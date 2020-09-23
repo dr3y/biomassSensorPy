@@ -1,10 +1,7 @@
 import time
 from TCS34725 import TCS34725
 import RPi.GPIO as GPIO
-import numpy as np
-import matplotlib.pyplot as plt
-import ipywidgets as widgets
-import bqplot as bq
+#import bqplot as bq
 
 
 ledpin = 7
@@ -55,14 +52,6 @@ def initFile(outfname):
     outfle = open(outfname,"w")
     outfle.write("time,r,g,b,c,ctrl_r,ctrl_g,ctrl_b,ctrl_c\n")
     outfle.close()
-def initplot():
-    """initialize the interactive plot"""
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    plt.ion()
-    fig.show()
-    fig.canvas.draw()
-    return fig,ax
 def readFile(fname):
     """reads a file and converts it into a dictionary, sort of like a dataframe"""
     vdict = {}
@@ -78,74 +67,3 @@ def readFile(fname):
                 for datum,value in zip(sfline,columns):
                     vdict[value]=vdict[value]+[float(datum)]
     return vdict
-def updatePlot(fig,ax,valsdict,xlim=None,ylim=None):
-    """update the interactive plot. run every time you take a new reading!"""
-    #ax = fig.ax
-    ax.clear()
-    ax.plot(valsdict['time'], \
-            [a[0]-a[1] for a in zip(valsdict['r'],valsdict['ctrl_r'])],\
-            color='red')
-    ax.plot(valsdict['time'], \
-            [a[0]-a[1] for a in zip(valsdict['g'],valsdict['ctrl_g'])],\
-            color='green')
-    ax.plot(valsdict['time'], \
-            [a[0]-a[1] for a in zip(valsdict['b'],valsdict['ctrl_b'])],\
-            color='blue')
-    ax.plot(valsdict['time'], \
-            [a[0]-a[1] for a in zip(valsdict['c'],valsdict['ctrl_c'])],\
-            color='black')
-    if(not (xlim == None)):
-        ax.set_xlim(xlim[0],xlim[1])
-    if(not (ylim == None)):
-        ax.set_ylim(ylim[0],ylim[1])
-    fig.canvas.draw()
-
-class PlotPanel:
-    NODATA=0
-    PLOTNODATA=1
-    PLOTDATA=2
-    PLOTPAUSE=3
-    NOSENSOR=4
-    def __init__(self,):
-        self.datastate = 0
-        self.beginbut = widgets.Button(
-            description='Begin',
-            disabled=False,
-            button_style='success', # 'success', 'info', 'warning', 'danger' or ''
-            tooltip='start/pause',
-        )
-
-        self.endbut = widgets.Button(
-            description='End',
-            disabled=False,
-            button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
-            tooltip='stop',
-        )
-        self.fig = bq.Figure(marks=[scat],\
-                layout=widgets.Layout(width='auto', height='auto'),\
-                fig_margin=dict(top=0, bottom=0, left=0, right=0))
-        self.lbox = widgets.VBox([self.fig,widgets.HBox([self.beginbut,self.endbut])])
-        self.enactState(self)
-    def enactState(self):
-        if(self.datastate==NODATA):
-            self.beginbut.enabled=True
-            self.beginbut.description="Begin"
-            self.beginbut.button_style='success'
-            self.endbut.enabled=False
-            self.fig.marks=[]
-        elif(self.datastate==PLOTNODATA or self.datastate==PLOTDATA):
-            self.beginbut.enabled=True
-            self.beginbut.description="Pause"
-            self.beginbut.button_style='warning'
-            self.endbut.enabled=True
-        elif(self.datastate==PLOTPAUSE):
-            self.beginbut.enabled=True
-            self.beginbut.description="Continue"
-            self.beginbut.button_style='success'
-            self.endbut.enabled=False
-        elif(self.datastate==NOSENSOR):
-            self.beginbut.enabled=False
-            self.beginbut.description="No"
-            self.beginbut.button_style='success'
-            self.endbut.enabled=False
-            self.fig.marks=[]

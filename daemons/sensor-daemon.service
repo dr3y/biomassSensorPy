@@ -1,0 +1,15 @@
+[Unit]
+Description=Biomass Sensor Driver
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3.7 /home/pi/biomassSensorPy/runsensor/sensorDaemon.py
+Type=simple
+WorkingDirectory=/home/pi/biomassSensorPy/runsensor
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

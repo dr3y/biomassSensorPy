@@ -1,0 +1,15 @@
+[Unit]
+Description=Biomass Data Sender
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3.7 /home/pi/biomassSensorPy/flaskapp/send-sine-data.py
+Type=simple
+WorkingDirectory=/home/pi/biomassSensorPy/flaskapp
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

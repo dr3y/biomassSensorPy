@@ -35,7 +35,7 @@ The system consists of two basic components:
 - Growth phases can be visualized without any specific calibration, since you can look at the shape of the growth curve easily.
 - device can be used inside a shaking incubator
 
-### Disadvantaged over conventional OD measurements
+### Disadvantages over conventional OD measurements
 
 - The values that the sensor reports depend on the tube holder configuration, culture vessel, and amount of liquid in the vessel. You must establish a calibration curve if you want a raw value to OD conversion
 - The device connects to a wifi network to report data. If you do not have access to a non-enterprise 2.4 Ghz wifi network, you cannot use the sensor.

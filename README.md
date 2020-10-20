@@ -27,7 +27,7 @@ The system consists of two basic components:
    
  __A.__ The sensor detects the reflected light change as a culture goes from being transparent to opaque. When the culture is transparent, light from the LED on the sensor goes through the liquid and doesn't reflect back onto the sensor, which means that the sensor basically detects the same amount of light with or without the LED on. Then, when the bacteria grow they become opaque, which reflects the light from the LED back into the sensor, and the reported raw values with the LED on are higher than with the LED off. __B.__ An example trace which shows all the values reported by the sensor. Values reported from the sensor are subtracted from a "no LED" value measured immediately before with the LED off. The sensor detects red, green, blue, and white light reflected by the object placed in front of it. Becuase the change in the "white" value was the highest, this is the only value that is reported in the web interface.
  
-### Advantages over convetional OD measurements
+### Advantages over conventional OD measurements
 
 - The device reports live culture growth values so there is no need to open the culture vessel and pipet out liquid in order to check the absorbance.
 - Values can be checked remotely over the internet which allows remote monitoring of culture growth.
@@ -35,7 +35,7 @@ The system consists of two basic components:
 - Growth phases can be visualized without any specific calibration, since you can look at the shape of the growth curve easily.
 - device can be used inside a shaking incubator
 
-### Disadvantaged over convetional OD measurements
+### Disadvantaged over conventional OD measurements
 
 - The values that the sensor reports depend on the tube holder configuration, culture vessel, and amount of liquid in the vessel. You must establish a calibration curve if you want a raw value to OD conversion
 - The device connects to a wifi network to report data. If you do not have access to a non-enterprise 2.4 Ghz wifi network, you cannot use the sensor.

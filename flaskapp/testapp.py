@@ -4,7 +4,7 @@ import plotly
 import time
 #import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
+from plotly import graph_objects as go
 import os
 
 app = Flask(__name__)
